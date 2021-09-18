@@ -51,6 +51,10 @@ exports.getPosts = (req, res, next) => {
 exports.createPost = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    if(req.file){
+      const imagePath = req.file.path;
+      deleteFile(imagePath);
+    }
     const message = "validation failed, entered data is incorrect.";
     const statusCode = 422;
     errorCode(message, statusCode);
@@ -66,15 +70,7 @@ exports.createPost = (req, res, next) => {
   const content = req.body.content;
   const imageUrl = req.file.path.replace("images\\", "images/");
   let creator;
-  //هنتأكد ان لو باقي بيانات الفورمة مش كاملة نحذف الصورة اللي اترفعت
-  if (!title || !content) {
-    // //ميثود انا عاملها لحذف الملفات اما نعطيها مسار الملف
-    // deleteFile(imageUrl);
-    // //وهنا نخلي قيمة المتغير اللي محفوظ فيه مسار الصورة غير معرف عشان ميتحفظش في الداتا بيز
-    // imageUrl = undefined;
-    //اضافة اخرى لايقاف باقي الكود
-    return;
-  }
+ 
   const post = new Post({
     title: title,
     content: content,
